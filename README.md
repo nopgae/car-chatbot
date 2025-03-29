@@ -14,7 +14,7 @@ A simple, interactive web-based chatbot that provides information about cars, in
 
 ## Live Demo
 
-You can try the chatbot here: [https://yourusername.github.io/car-chatbot](https://yourusername.github.io/car-chatbot)
+You can try the chatbot here: [https://nopgae.github.io/car-chatbot](https://nopgae.github.io/car-chatbot)
 
 ## How It Works
 
