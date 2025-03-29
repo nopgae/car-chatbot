@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoAssist - Your Car Chatbot</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-car"></i>
+                <h1>AutoAssist</h1>
+            </div>
+            <p class="tagline">Your intelligent car shopping assistant</p>
+        </header>
+
+        <main>
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message bot">
+                        <div class="avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <p>Hello! I'm AutoAssist, your car shopping assistant. Ask me about any car models, prices, or specifications!</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <form id="chat-form">
+                        <div class="file-upload">
+                            <label for="image-upload">
+                                <i class="fas fa-paperclip"></i>
+                            </label>
+                            <input type="file" id="image-upload" accept="image/*">
+                        </div>
+                        <input type="text" id="user-input" placeholder="Ask about cars, prices, or features...">
+                        <button type="submit">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                    <div id="image-preview" class="image-preview hidden">
+                        <img id="preview-img" src="" alt="Preview">
+                        <button id="remove-image">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features">
+                <h2>Popular Questions</h2>
+                <div class="suggestion-chips">
+                    <button class="chip" data-query="What's the best family sedan in 2025?">Best family sedan?</button>
+                    <button class="chip" data-query="Compare Toyota Camry vs Honda Accord">Camry vs Accord</button>
+                    <button class="chip" data-query="What electric cars have the best range?">Best EV range</button>
+                    <button class="chip" data-query="Most affordable SUVs in 2025">Affordable SUVs</button>
+                </div>
+                
+                <div class="car-database-preview">
+                    <h2>Featured Cars</h2>
+                    <div class="featured-cars">
+                        <div class="car-card">
+                            <img src="https://via.placeholder.com/150?text=Camry" alt="Toyota Camry">
+                            <h3>Toyota Camry</h3>
+                            <p>Starting at $26,220</p>
+                        </div>
+                        <div class="car-card">
+                            <img src="https://via.placeholder.com/150?text=Accord" alt="Honda Accord">
+                            <h3>Honda Accord</h3>
+                            <p>Starting at $27,895</p>
+                        </div>
+                        <div class="car-card">
+                            <img src="https://via.placeholder.com/150?text=Model+3" alt="Tesla Model 3">
+                            <h3>Tesla Model 3</h3>
+                            <p>Starting at $38,990</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2025 AutoAssist - Powered by Claude AI</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
