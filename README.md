@@ -44,7 +44,7 @@ This demo includes:
    - Select the main branch as the source
    - Click Save
 
-Your chatbot will be available at `https://yourusername.github.io/car-chatbot`
+Your chatbot will be available at `https://nopgae.github.io/car-chatbot`
 
 ## Connecting to Claude API
 
