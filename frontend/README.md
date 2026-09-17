@@ -133,10 +133,10 @@ To use Claude AI for natural language understanding:
 
 ## Customizing the Car Database
 
-The chatbot comes with a basic car database in `script.js`. To add more cars or update information:
+The chatbot currently ships with only 3 hardcoded cars (Toyota Camry, Honda Accord, Tesla Model 3), duplicated in both `frontend/script.js` and `backend/server.js`. To add more cars or update information:
 
-1. Edit the `carDatabase` object in `script.js`.
-2. For a production application, consider moving this database to the backend.
+1. Edit the `carDatabase` object in both `frontend/script.js` and `backend/server.js`.
+2. For a production application, consider moving this database to a single shared datastore instead of duplicating it in two places.
 
 ## License
 
@@ -144,7 +144,9 @@ MIT License - See LICENSE file for details.
 
 ## Contact
 
-For questions or feedback, please open an issue on GitHub or contact [your-email@example.com]. Prerequisites
+For questions or feedback, please open an issue on GitHub.
+
+### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v16 or later)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)

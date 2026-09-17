@@ -2,10 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
-const { Anthropic } = require('anthropic');
-// If the above import doesn't work, try one of these alternatives:
-// const Anthropic = require('anthropic');
-// const { Anthropic } = require('@anthropic-ai/sdk');
+const Anthropic = require('@anthropic-ai/sdk');
 require('dotenv').config();
 
 // Create Express app
