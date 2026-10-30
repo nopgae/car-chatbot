@@ -224,28 +224,6 @@ async function processMessage(userMessage, imageData = null) {
             ? LOCAL_API_ENDPOINT 
             : API_ENDPOINT;
             
-        // In a real implementation, we would send the message to our backend
-        // For demo purposes, we'll just simulate a response
-        
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Generate a simulated response based on the query
-        let response = "I don't have specific information about that. In a real implementation, this question would be processed by Claude AI for a detailed response.";
-        
-        if (userMessage.toLowerCase().includes("best family sedan")) {
-            response = "Based on current ratings, the Honda Accord and Toyota Camry are consistently top-rated family sedans. The Accord is praised for its refined driving experience and fuel efficiency, while the Camry is known for reliability and resale value.";
-        } else if (userMessage.toLowerCase().includes("electric") || userMessage.toLowerCase().includes("ev")) {
-            response = "For electric vehicles with the best range, the Tesla Model S leads with up to 405 miles, followed by the Lucid Air with approximately 520 miles, and the Mercedes EQS with about 350 miles of range.";
-        } else if (userMessage.toLowerCase().includes("suv") || userMessage.toLowerCase().includes("crossover")) {
-            response = "Some of the most affordable SUVs in 2025 include the Kia Seltos ($24,390), Hyundai Tucson ($27,250), and Mazda CX-5 ($27,975). All offer good value with standard safety features.";
-        }
-        
-        return {
-            text: response
-        };
-        
-        /* In real implementation with backend:
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
@@ -262,7 +240,6 @@ async function processMessage(userMessage, imageData = null) {
         }
         
         return await response.json();
-        */
     } catch (error) {
         console.error('Error processing message:', error);
         return {

@@ -55,6 +55,15 @@ const upload = multer({
   }
 });
 
+// claude-3-opus-20240229 is retired; requests to it fail
+const CLAUDE_MODEL = "claude-opus-5-5";
+
+// Newer models may return thinking blocks before the text, so don't assume content[0]
+function replyText(completion) {
+  const block = completion.content.find((b) => b.type === "text");
+  return block ? block.text : "Sorry, I couldn't answer that. Please try rephrasing.";
+}
+
 // Initialize Anthropic client
 const anthropic = new Anthropic({
   apiKey: process.env.CLAUDE_API_KEY,
@@ -220,8 +229,8 @@ app.post('/api/chat', upload.single('image'), async (req, res) => {
       
       // Call Claude API with the image context
       const completion = await anthropic.messages.create({
-        model: "claude-3-opus-20240229",
-        max_tokens: 1000,
+        model: CLAUDE_MODEL,
+        max_tokens: 16000,
         messages: [
           {
             role: "user",
@@ -237,15 +246,15 @@ app.post('/api/chat', upload.single('image'), async (req, res) => {
       });
       
       return res.json({
-        text: completion.content[0].text,
+        text: replyText(completion),
         imageUrl: null
       });
     }
     
     // For all other queries, use Claude API
     const completion = await anthropic.messages.create({
-      model: "claude-3-opus-20240229",
-      max_tokens: 1000,
+      model: CLAUDE_MODEL,
+      max_tokens: 16000,
       messages: [
         {
           role: "user",
@@ -256,7 +265,7 @@ app.post('/api/chat', upload.single('image'), async (req, res) => {
     });
     
     return res.json({
-      text: completion.content[0].text,
+      text: replyText(completion),
       imageUrl: null
     });
     
