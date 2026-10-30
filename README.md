@@ -10,7 +10,8 @@ frontend/ (static HTML/CSS/JS, GitHub Pages)
    ▼
 backend/server.js (Express)
    ├─ question matches a car in the built-in table → answer locally (no API call)
-   └─ otherwise → Anthropic Claude API (Messages API) with a car-assistant system prompt
+   └─ otherwise → Claude (claude-opus-5-5, Messages API) with a car-assistant system prompt;
+      an attached photo is sent as an image block so Claude can identify the car
 ```
 
 - The built-in table has 3 cars (Toyota Camry, Honda Accord, Tesla Model 3), duplicated in `frontend/script.js` and `backend/server.js`.
@@ -21,8 +22,9 @@ backend/server.js (Express)
 ```bash
 cd backend
 npm install
-cp .env.example .env      # set CLAUDE_API_KEY (from https://console.anthropic.com/)
+cp .env.example .env      # set ANTHROPIC_API_KEY (from https://console.anthropic.com/)
 npm start                 # http://localhost:3000, health check at /health
+npm test                  # offline: the Claude call is stubbed
 
 # in another terminal
 cd frontend
@@ -33,11 +35,11 @@ On `localhost` the frontend calls `http://localhost:3000/api/chat`. For a deploy
 
 ## Limitations
 
-- **Image upload does not identify cars.** The frontend sends the image inside JSON, which the backend ignores, and the backend only ever sends text to Claude, so the model never sees the image.
+- Photo identification is only as good as the model's guess from one image; there is no car-specific vision model.
 - The GitHub Pages deployment has no backend configured (`API_ENDPOINT` is a placeholder), so on the hosted page only questions about the 3 built-in cars get an answer.
 - Car data is a 3-entry hardcoded table with 2025 list prices typed in by hand; no external data source.
-- No tests, auth, or rate limiting; uploaded files are kept on local disk with no cleanup.
+- No auth or rate limiting, so a public deployment would let anyone spend your API credits. Tests stub the Claude call, so the live API request itself is not covered.
 
 ## Tech stack
 
-HTML/CSS/JavaScript · Node.js · Express · multer · Anthropic SDK (`@anthropic-ai/sdk`) · GitHub Actions → GitHub Pages
+HTML/CSS/JavaScript · Node.js · Express · Anthropic SDK (`@anthropic-ai/sdk`) · GitHub Actions → GitHub Pages

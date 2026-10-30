@@ -1,7 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const multer = require('multer');
-const path = require('path');
 const Anthropic = require('@anthropic-ai/sdk');
 require('dotenv').config();
 
@@ -30,31 +28,6 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Configure file uploads
-const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function(req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-  fileFilter: function(req, file, cb) {
-    const filetypes = /jpeg|jpg|png|gif/;
-    const mimetype = filetypes.test(file.mimetype);
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    
-    if (mimetype && extname) {
-      return cb(null, true);
-    }
-    cb(new Error("Only image files are allowed!"));
-  }
-});
-
 // claude-3-opus-20240229 is retired; requests to it fail
 const CLAUDE_MODEL = "claude-opus-5-5";
 
@@ -65,9 +38,7 @@ function replyText(completion) {
 }
 
 // Initialize Anthropic client
-const anthropic = new Anthropic({
-  apiKey: process.env.CLAUDE_API_KEY,
-});
+const anthropic = new Anthropic(); // reads ANTHROPIC_API_KEY
 
 // Car database (expanded version with more details)
 const carDatabase = {
@@ -137,21 +108,11 @@ function lookupCarInfo(query) {
 }
 
 // API endpoint for chat
-app.post('/api/chat', upload.single('image'), async (req, res) => {
+app.post('/api/chat', async (req, res) => {
   try {
     const { message } = req.body;
-    const imageFile = req.file;
-    let imageUrl = null;
-    
     if (!message) {
       return res.status(400).json({ error: 'No message provided' });
-    }
-    
-    // Store image URL if one was uploaded
-    if (imageFile) {
-      // In production, you would store this in cloud storage
-      // For demo, we'll just use the local path
-      imageUrl = `${req.protocol}://${req.get('host')}/uploads/${imageFile.filename}`;
     }
     
     // Process images or specific car questions locally if possible
@@ -221,53 +182,24 @@ app.post('/api/chat', upload.single('image'), async (req, res) => {
       }
     }
     
-    // If image was uploaded but no car detected, we'll use Claude to help identify
-    if (imageUrl) {
-      // In a real app, you might use a computer vision API to detect the car
-      // For demo purposes, we'll use Claude to "simulate" car recognition
-      const prompt = `I've uploaded an image of a car. Can you help identify what make and model it might be? ${message}`;
-      
-      // Call Claude API with the image context
-      const completion = await anthropic.messages.create({
-        model: CLAUDE_MODEL,
-        max_tokens: 16000,
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: prompt
-              }
-            ]
-          }
-        ],
-        system: "You are AutoAssist, a helpful car assistant. You provide information about cars, their features, prices, and specifications. Keep responses concise, informative, and focused on helping customers find the right car. If you don't know something specific about a car, be honest and suggest where they might find that information."
-      });
-      
-      return res.json({
-        text: replyText(completion),
-        imageUrl: null
-      });
-    }
-    
-    // For all other queries, use Claude API
+    // The frontend sends an attached photo as a data URL: data:image/png;base64,...
+    const image = typeof req.body.image === 'string'
+      && req.body.image.match(/^data:(image\/(?:jpeg|png|gif|webp));base64,(.+)$/);
+    const content = image
+      ? [
+          { type: "image", source: { type: "base64", media_type: image[1], data: image[2] } },
+          { type: "text", text: message },
+        ]
+      : message;
+
     const completion = await anthropic.messages.create({
       model: CLAUDE_MODEL,
       max_tokens: 16000,
-      messages: [
-        {
-          role: "user",
-          content: message
-        }
-      ],
+      messages: [{ role: "user", content }],
       system: "You are AutoAssist, a helpful car assistant. You provide information about cars, their features, prices, and specifications. Keep responses concise, informative, and focused on helping customers find the right car. If you don't know something specific about a car, be honest and suggest where they might find that information. Here's some specific information about 2025 car models that you know:\n\n- The Toyota Camry starts at $26,220 and is known for reliability and good fuel economy.\n- The Honda Accord starts at $27,895 and is praised for handling and interior space.\n- The Tesla Model 3 starts at $38,990 with around 272 miles of range.\n- The Ford F-150 starts at $34,585 and is the best-selling truck in America.\n- The Hyundai Tucson starts at $27,250 and offers good value with many standard features."
     });
-    
-    return res.json({
-      text: replyText(completion),
-      imageUrl: null
-    });
+
+    return res.json({ text: replyText(completion) });
     
   } catch (error) {
     console.error('Error:', error);
@@ -278,22 +210,16 @@ app.post('/api/chat', upload.single('image'), async (req, res) => {
   }
 });
 
-// Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-// Create uploads directory if it doesn't exist
-const fs = require('fs');
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
+// Start the server
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 }
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = { app, anthropic };
